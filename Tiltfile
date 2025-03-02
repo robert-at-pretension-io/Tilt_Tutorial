@@ -1,6 +1,10 @@
 
 # Allow for longer timeouts since Istio can take time to install
 update_settings()
+k8s_kind('AuthorizationPolicy', api_version='security.istio.io/v1beta1')
+k8s_kind('RequestAuthentication', api_version='security.istio.io/v1beta1')
+k8s_kind('Gateway', api_version='networking.istio.io/v1beta1')
+k8s_kind('VirtualService', api_version='networking.istio.io/v1beta1')
 
 # Function to install Istio using Helm
 def install_istio():
