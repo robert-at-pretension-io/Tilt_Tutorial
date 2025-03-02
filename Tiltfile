@@ -39,8 +39,8 @@ def install_istio():
     k8s_yaml(istio_ingress_yaml)
 
     # Set resource dependencies for proper order
-    k8s_resource('istiod', resource_deps=[istio_base_yaml], labels=['istio', 'setup'])
-    k8s_resource('istio-ingress', resource_deps=[istiod_yaml], labels=['istio', 'setup'])
+    k8s_resource('istiod', resource_deps=['istio-base'], labels=['istio', 'setup'])
+    k8s_resource('istio-ingress', resource_deps=['istiod'], labels=['istio', 'setup'])
 
 # Install Istio
 install_istio()
