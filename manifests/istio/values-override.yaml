@@ -1,0 +1,4 @@
+# Base values configuration
+global:
+  defaultPodDisruptionBudget:
+    enabled: false

@@ -1,0 +1,31 @@
+# Keycloak configuration values
+auth:
+  adminUser: admin
+  adminPassword: admin  # Change for production!
+
+service:
+  type: ClusterIP
+
+# Configure database
+postgresql:
+  enabled: true
+  auth:
+    username: bn_keycloak
+    password: bn_keycloak  # Change for production!
+    database: bitnami_keycloak
+
+# Configure Istio integration
+proxy:
+  enabled: true
+
+# Use appropriate resource limits for development
+resources:
+  limits:
+    memory: 1Gi
+    cpu: 1000m
+  requests:
+    memory: 512Mi
+    cpu: 250m
+
+# For development, we can reduce replicas
+replicaCount: 1
