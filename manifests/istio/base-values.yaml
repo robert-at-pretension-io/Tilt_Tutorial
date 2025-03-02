@@ -1,0 +1,4 @@
+# Base values configuration for Istio
+global:
+  defaultPodDisruptionBudget:
+    enabled: false
