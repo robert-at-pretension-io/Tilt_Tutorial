@@ -8,10 +8,6 @@ def install_istio():
     local('helm repo add istio https://istio-release.storage.googleapis.com/charts')
     local('helm repo update')
 
-    # Create namespaces if they don't exist
-    local('kubectl create namespace istio-system --dry-run=client -o yaml | kubectl apply -f -')
-    local('kubectl create namespace istio-ingress --dry-run=client -o yaml | kubectl apply -f -')
-    local('kubectl create namespace keycloak --dry-run=client -o yaml | kubectl apply -f -')
 
     # Create namespaces if they don't exist
     local('kubectl create namespace istio-system --dry-run=client -o yaml | kubectl apply -f -')
@@ -79,7 +75,7 @@ def configure_auth():
     k8s_yaml('manifests/auth/gateway.yaml')
     
     # Set resource dependencies
-    k8s_resource('keycloak', resource_deps=['istiod', 'keycloak'], labels=['auth', 'istio'])
+    k8s_resource('jwt-auth', resource_deps=['istiod', 'keycloak'], labels=['auth', 'istio'])
     k8s_resource('authorization-policy', resource_deps=['request-authentication'], labels=['auth', 'istio'])
 
 # Configure authentication
@@ -93,7 +89,7 @@ k8s_yaml('services/sample-app/k8s/deployment.yaml')
 k8s_resource(
     'sample-app',
     port_forwards=['3000:3000'],
-    resource_deps=['request-authentication', 'authorization-policy'],
+    resource_deps=['jwt-auth', 'authorization-policy'],
     labels=['app']
 )
 
