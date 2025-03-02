@@ -13,9 +13,12 @@ def install_istio():
     local('kubectl create namespace istio-ingress --dry-run=client -o yaml | kubectl apply -f -')
     local('kubectl create namespace keycloak --dry-run=client -o yaml | kubectl apply -f -')
 
-    # Install Istio base
+    # Create namespaces if they don't exist
+    local('kubectl create namespace istio-system --dry-run=client -o yaml | kubectl apply -f -')
+    local('kubectl create namespace istio-ingress --dry-run=client -o yaml | kubectl apply -f -')
+    local('kubectl create namespace keycloak --dry-run=client -o yaml | kubectl apply -f -')
     k8s_yaml(helm(
-        'istio/base',
+        'base',
         name='istio-base',
         namespace='istio-system',
         values=['manifests/istio/base-values.yaml']
@@ -23,7 +26,7 @@ def install_istio():
 
     # Install Istio discovery (istiod)
     k8s_yaml(helm(
-        'istio/istiod',
+        'istiod',
         name='istiod',
         namespace='istio-system',
         values=['manifests/istio/istiod-values.yaml']
@@ -31,7 +34,7 @@ def install_istio():
 
     # Install Istio ingress gateway
     k8s_yaml(helm(
-        'istio/gateway',
+        'gateway',
         name='istio-ingress',
         namespace='istio-ingress',
         values=['manifests/istio/gateway-values.yaml']
