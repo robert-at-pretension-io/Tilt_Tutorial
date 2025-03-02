@@ -1,0 +1,9 @@
+# Istiod (control plane) configuration
+pilot:
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 2Gi
