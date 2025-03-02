@@ -8,11 +8,14 @@ def install_istio():
     local('helm repo add istio https://istio-release.storage.googleapis.com/charts')
     local('helm repo update')
 
-
     # Create namespaces if they don't exist
     local('kubectl create namespace istio-system --dry-run=client -o yaml | kubectl apply -f -')
     local('kubectl create namespace istio-ingress --dry-run=client -o yaml | kubectl apply -f -')
     local('kubectl create namespace keycloak --dry-run=client -o yaml | kubectl apply -f -')
+    
+    # Install Istio CRDs first
+    local('kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.17/manifests/charts/base/crds/crd-all.gen.yaml')
+    
     # Install Istio base
     istio_base_yaml = local(
         'helm template istio-base istio/base --namespace istio-system --version 1.17.1 -f manifests/istio/base-values.yaml',
@@ -75,30 +78,26 @@ def configure_auth():
     # Create Istio Gateway and VirtualService for your applications
     k8s_yaml('manifests/auth/gateway.yaml')
     
-    # Explicitly register resources with their exact names from the YAML files
+    # Configure resources with their names from the YAML files
     k8s_resource(
-        new_name='auth-policy',
-        objects=['auth-policy:AuthorizationPolicy:istio-system'],
-        resource_deps=['jwt-auth'],  # adjust as needed, maybe 'istio-system:jwt-auth'
+        'auth-policy',
+        resource_deps=['jwt-auth'],
         labels=['auth', 'istio']
     )
     
     k8s_resource(
-        new_name='jwt-auth',
-        objects=['jwt-auth:RequestAuthentication:istio-system'],
+        'jwt-auth',
         labels=['auth', 'istio']
     )
     
     k8s_resource(
-        new_name='app-gateway',
-        objects=['app-gateway:Gateway:istio-system'],
+        'app-gateway',
         labels=['auth', 'istio']
     )
     
     # Also reference the VirtualService
     k8s_resource(
-        new_name='keycloak-vs',
-        objects=['keycloak-vs:VirtualService:keycloak'],
+        'keycloak-vs',
         labels=['auth', 'istio']
     )
 
