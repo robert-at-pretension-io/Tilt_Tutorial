@@ -18,27 +18,29 @@ def install_istio():
     local('kubectl create namespace istio-ingress --dry-run=client -o yaml | kubectl apply -f -')
     local('kubectl create namespace keycloak --dry-run=client -o yaml | kubectl apply -f -')
     # Install Istio base
-    k8s_yaml(local(
+    istio_base_yaml = local(
         'helm template istio-base istio/base --namespace istio-system --version 1.17.1 -f manifests/istio/base-values.yaml',
         quiet=True
-    ))
+    )
+    k8s_yaml(istio_base_yaml)
 
     # Install Istio discovery (istiod)
-    k8s_yaml(local(
+    istiod_yaml = local(
         'helm template istiod istio/istiod --namespace istio-system --version 1.17.1 -f manifests/istio/istiod-values.yaml',
         quiet=True
-    ))
+    )
+    k8s_yaml(istiod_yaml)
 
     # Install Istio ingress gateway
-    k8s_yaml(local(
+    istio_ingress_yaml = local(
         'helm template istio-ingress istio/gateway --namespace istio-ingress --version 1.17.1 -f manifests/istio/gateway-values.yaml',
         quiet=True
-    ))
+    )
+    k8s_yaml(istio_ingress_yaml)
 
     # Set resource dependencies for proper order
-    k8s_resource('istio-base', labels=['istio', 'setup'])
-    k8s_resource('istiod', resource_deps=['istio-base'], labels=['istio', 'setup'])
-    k8s_resource('istio-ingress', resource_deps=['istiod'], labels=['istio', 'setup'])
+    k8s_resource('istiod', resource_deps=[istio_base_yaml], labels=['istio', 'setup'])
+    k8s_resource('istio-ingress', resource_deps=[istiod_yaml], labels=['istio', 'setup'])
 
 # Install Istio
 install_istio()
