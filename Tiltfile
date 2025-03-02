@@ -21,6 +21,7 @@ def install_istio():
         'base',
         name='istio-base',
         namespace='istio-system',
+        repo_name='istio',
         values=['manifests/istio/base-values.yaml']
     ))
 
@@ -29,6 +30,7 @@ def install_istio():
         'istiod',
         name='istiod',
         namespace='istio-system',
+        repo_name='istio',
         values=['manifests/istio/istiod-values.yaml']
     ))
 
@@ -37,6 +39,7 @@ def install_istio():
         'gateway',
         name='istio-ingress',
         namespace='istio-ingress',
+        repo_name='istio',
         values=['manifests/istio/gateway-values.yaml']
     ))
 
