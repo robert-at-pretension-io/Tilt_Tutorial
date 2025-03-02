@@ -15,8 +15,7 @@ postgresql:
     database: bitnami_keycloak
 
 # Configure Istio integration
-proxy:
-  mode: "passthrough"
+proxy: edge
 
 # Use appropriate resource limits for development
 resources:
