@@ -62,11 +62,16 @@ def install_keycloak():
         quiet=True
     ))
 
-    # Configure Keycloak resource in Tilt
+    # Configure Keycloak and PostgreSQL resources in Tilt
+    k8s_resource(
+        'keycloak-postgresql',
+        labels=['auth', 'database']
+    )
+    
     k8s_resource(
         'keycloak',
         port_forwards=['8080:8080'],  # Forward Keycloak admin console
-        resource_deps=['istio-ingress'],  # Ensure Istio is ready first
+        resource_deps=['istio-ingress', 'keycloak-postgresql'],  # Ensure dependencies are ready first
         labels=['auth']
     )
 

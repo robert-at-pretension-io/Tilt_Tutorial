@@ -7,9 +7,21 @@ ADMIN_PASSWORD="admin"
 
 # Wait for Keycloak to be ready
 echo "Waiting for Keycloak to be ready..."
-until curl -s "$KEYCLOAK_URL/realms/master" > /dev/null; do
-  sleep 5
+MAX_RETRIES=30
+RETRY_COUNT=0
+
+until curl -s "$KEYCLOAK_URL/realms/master" > /dev/null || [ $RETRY_COUNT -eq $MAX_RETRIES ]; do
+  echo "Attempt $((RETRY_COUNT+1))/$MAX_RETRIES - Waiting for Keycloak..."
+  RETRY_COUNT=$((RETRY_COUNT+1))
+  sleep 10
 done
+
+if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+  echo "Keycloak did not become ready in time. Check the logs for errors."
+  exit 1
+fi
+
+echo "Keycloak is ready!"
 
 # Get admin token
 echo "Getting admin token..."

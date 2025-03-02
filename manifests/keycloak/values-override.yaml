@@ -13,6 +13,12 @@ postgresql:
     username: bn_keycloak
     password: bn_keycloak  # Change for production!
     database: bitnami_keycloak
+    
+  # Ensure PostgreSQL auth settings are properly passed to Keycloak
+  primary:
+    initdb:
+      user: bn_keycloak
+      password: bn_keycloak
 
 # Configure Istio integration
 proxy: edge
