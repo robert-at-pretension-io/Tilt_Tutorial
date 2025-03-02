@@ -13,7 +13,6 @@ def install_istio():
         'istio/base',
         name='istio-base',
         namespace='istio-system',
-        repo_url='https://istio-release.storage.googleapis.com/charts',
         create_namespace=True,
         values=['manifests/istio/base-values.yaml']
     ))
@@ -23,7 +22,6 @@ def install_istio():
         'istio/istiod',
         name='istiod',
         namespace='istio-system',
-        repo_url='https://istio-release.storage.googleapis.com/charts',
         values=['manifests/istio/istiod-values.yaml']
     ))
 
@@ -32,7 +30,6 @@ def install_istio():
         'istio/gateway',
         name='istio-ingress',
         namespace='istio-ingress',
-        repo_url='https://istio-release.storage.googleapis.com/charts',
         create_namespace=True,
         values=['manifests/istio/gateway-values.yaml']
     ))
@@ -57,7 +54,6 @@ def install_keycloak():
         name='keycloak',
         namespace='keycloak',
         create_namespace=True,
-        repo_url='https://charts.bitnami.com/bitnami',
         values=['manifests/keycloak/values-override.yaml']
     ))
 
