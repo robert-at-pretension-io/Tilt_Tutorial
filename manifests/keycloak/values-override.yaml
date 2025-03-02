@@ -28,3 +28,13 @@ resources:
 
 # For development, we can reduce replicas
 replicaCount: 1
+
+# Specify Docker Hub registry directly
+image:
+  registry: docker.io
+  repository: bitnami/keycloak
+  
+postgresql:
+  image:
+    registry: docker.io
+    repository: bitnami/postgresql
