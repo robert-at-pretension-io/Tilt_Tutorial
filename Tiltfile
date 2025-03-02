@@ -5,8 +5,8 @@ update_settings()
 # Function to install Istio using Helm
 def install_istio():
     # Add Istio helm repository
-    local('helm repo add istio https://istio-release.storage.googleapis.com/charts')
-    local('helm repo update')
+    retry_command('helm repo add istio https://istio-release.storage.googleapis.com/charts')
+    retry_command('helm repo update')
 
 
     # Create namespaces if they don't exist
@@ -37,6 +37,18 @@ def install_istio():
     # Set resource dependencies for proper order
     k8s_resource('istiod', resource_deps=['istio-base'], labels=['istio', 'setup'])
     k8s_resource('istio-ingress', resource_deps=['istiod'], labels=['istio', 'setup'])
+
+def retry_command(command, retries=3, delay=5):
+    """
+    Retry a shell command a specified number of times with a delay between attempts.
+    """
+    for attempt in range(retries):
+        result = local(command, quiet=True)
+        if result.exit_code == 0:
+            return result
+        print(f"Command failed: {command}. Retrying in {delay} seconds...")
+        time.sleep(delay)
+    fail(f"Command failed after {retries} attempts: {command}")
 
 # Install Istio
 install_istio()
