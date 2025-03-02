@@ -76,6 +76,8 @@ def install_keycloak():
     )
 
 # Install Keycloak
+# First clean up any existing PostgreSQL PVCs to avoid auth issues
+local('kubectl delete pvc --all -n keycloak --ignore-not-found=true')
 install_keycloak()
 
 # Add Istio authentication configuration for Keycloak

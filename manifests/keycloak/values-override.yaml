@@ -3,6 +3,15 @@ auth:
   adminUser: admin
   adminPassword: admin  # Change for production!
 
+# Database configuration
+database:
+  type: postgresql
+  host: keycloak-postgresql
+  port: 5432
+  database: bitnami_keycloak
+  username: bn_keycloak
+  password: bn_keycloak
+
 service:
   type: ClusterIP
 
@@ -13,12 +22,7 @@ postgresql:
     username: bn_keycloak
     password: bn_keycloak  # Change for production!
     database: bitnami_keycloak
-    
-  # Ensure PostgreSQL auth settings are properly passed to Keycloak
-  primary:
-    initdb:
-      user: bn_keycloak
-      password: bn_keycloak
+    postgresPassword: postgres  # Root password
 
 # Configure Istio integration
 proxy: edge
