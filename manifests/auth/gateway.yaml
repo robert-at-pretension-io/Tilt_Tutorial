@@ -1,0 +1,32 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: app-gateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*" # For production, limit to specific domains
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: keycloak-vs
+  namespace: keycloak
+spec:
+  hosts:
+  - "keycloak.example.com" # Use local domain or appropriate hostname
+  gateways:
+  - istio-system/app-gateway
+  http:
+  - route:
+    - destination:
+        host: keycloak.keycloak.svc.cluster.local
+        port:
+          number: 8080
