@@ -16,13 +16,7 @@ postgresql:
 
 # Configure Istio integration
 proxy:
-  enabled: true
-  address: ""
-  httpPort: 8080
-  httpsPort: 8443
-  annotations: {}
-  labels: {}
-  resources: {}
+  mode: "passthrough"
 
 # Use appropriate resource limits for development
 resources:
