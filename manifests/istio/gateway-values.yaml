@@ -1,0 +1,18 @@
+# Gateway configuration
+service:
+  type: LoadBalancer  # Change to NodePort for local development if needed
+  ports:
+    - name: http2
+      port: 80
+      targetPort: 8080
+    - name: https
+      port: 443
+      targetPort: 8443
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
