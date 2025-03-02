@@ -17,30 +17,22 @@ def install_istio():
     local('kubectl create namespace istio-system --dry-run=client -o yaml | kubectl apply -f -')
     local('kubectl create namespace istio-ingress --dry-run=client -o yaml | kubectl apply -f -')
     local('kubectl create namespace keycloak --dry-run=client -o yaml | kubectl apply -f -')
-    k8s_yaml(helm(
-        'base',
-        name='istio-base',
-        namespace='istio-system',
-        repo_name='istio',
-        values=['manifests/istio/base-values.yaml']
+    # Install Istio base
+    k8s_yaml(local(
+        'helm template istio-base istio/base --namespace istio-system --version 1.17.1 -f manifests/istio/base-values.yaml',
+        quiet=True
     ))
 
     # Install Istio discovery (istiod)
-    k8s_yaml(helm(
-        'istiod',
-        name='istiod',
-        namespace='istio-system',
-        repo_name='istio',
-        values=['manifests/istio/istiod-values.yaml']
+    k8s_yaml(local(
+        'helm template istiod istio/istiod --namespace istio-system --version 1.17.1 -f manifests/istio/istiod-values.yaml',
+        quiet=True
     ))
 
     # Install Istio ingress gateway
-    k8s_yaml(helm(
-        'gateway',
-        name='istio-ingress',
-        namespace='istio-ingress',
-        repo_name='istio',
-        values=['manifests/istio/gateway-values.yaml']
+    k8s_yaml(local(
+        'helm template istio-ingress istio/gateway --namespace istio-ingress --version 1.17.1 -f manifests/istio/gateway-values.yaml',
+        quiet=True
     ))
 
     # Set resource dependencies for proper order
@@ -58,11 +50,10 @@ def install_keycloak():
     local('helm repo update')
 
     # Install Keycloak
-    k8s_yaml(helm(
-        'keycloak',
-        name='keycloak',
-        namespace='keycloak',
-        values=['manifests/keycloak/values-override.yaml']
+    # Install Keycloak
+    k8s_yaml(local(
+        'helm template keycloak bitnami/keycloak --namespace keycloak -f manifests/keycloak/values-override.yaml',
+        quiet=True
     ))
 
     # Configure Keycloak resource in Tilt
