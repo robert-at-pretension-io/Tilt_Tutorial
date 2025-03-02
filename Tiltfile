@@ -8,12 +8,16 @@ def install_istio():
     local('helm repo add istio https://istio-release.storage.googleapis.com/charts')
     local('helm repo update')
 
+    # Create namespaces if they don't exist
+    local('kubectl create namespace istio-system --dry-run=client -o yaml | kubectl apply -f -')
+    local('kubectl create namespace istio-ingress --dry-run=client -o yaml | kubectl apply -f -')
+    local('kubectl create namespace keycloak --dry-run=client -o yaml | kubectl apply -f -')
+
     # Install Istio base
     k8s_yaml(helm(
         'istio/base',
         name='istio-base',
         namespace='istio-system',
-        create_namespace=True,
         values=['manifests/istio/base-values.yaml']
     ))
 
@@ -30,7 +34,6 @@ def install_istio():
         'istio/gateway',
         name='istio-ingress',
         namespace='istio-ingress',
-        create_namespace=True,
         values=['manifests/istio/gateway-values.yaml']
     ))
 
@@ -53,7 +56,6 @@ def install_keycloak():
         'keycloak',
         name='keycloak',
         namespace='keycloak',
-        create_namespace=True,
         values=['manifests/keycloak/values-override.yaml']
     ))
 
