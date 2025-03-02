@@ -1,6 +1,6 @@
 
 # Allow for longer timeouts since Istio can take time to install
-update_settings(max_status_age=300)
+update_settings()
 
 # Function to install Istio using Helm
 def install_istio():
