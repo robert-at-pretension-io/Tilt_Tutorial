@@ -1,0 +1,9 @@
+apiVersion: security.istio.io/v1beta1
+kind: RequestAuthentication
+metadata:
+  name: jwt-auth
+  namespace: istio-system
+spec:
+  jwtRules:
+  - issuer: "http://keycloak.keycloak.svc.cluster.local:8080/realms/master"
+    jwksUri: "http://keycloak.keycloak.svc.cluster.local:8080/realms/master/protocol/openid-connect/certs"
