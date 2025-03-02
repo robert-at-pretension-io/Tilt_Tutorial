@@ -46,8 +46,8 @@ def retry_command(command, retries=3, delay=5):
         result = local(command, quiet=True)
         if result.exit_code == 0:
             return result
-        print(f"Command failed: {command}. Retrying in {delay} seconds...")
-        time.sleep(delay)
+        print("Command failed: " + command + ". Retrying in " + str(delay) + " seconds...")
+        local("sleep " + str(delay), quiet=True)
     fail(f"Command failed after {retries} attempts: {command}")
 
 # Install Istio
