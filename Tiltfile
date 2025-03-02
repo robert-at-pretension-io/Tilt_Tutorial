@@ -5,8 +5,8 @@ update_settings()
 # Function to install Istio using Helm
 def install_istio():
     # Add Istio helm repository
-    retry_command('helm repo add istio https://istio-release.storage.googleapis.com/charts')
-    retry_command('helm repo update')
+    local('helm repo add istio https://istio-release.storage.googleapis.com/charts')
+    local('helm repo update')
 
 
     # Create namespaces if they don't exist
@@ -38,17 +38,6 @@ def install_istio():
     k8s_resource('istiod', resource_deps=['istio-base'], labels=['istio', 'setup'])
     k8s_resource('istio-ingress', resource_deps=['istiod'], labels=['istio', 'setup'])
 
-def retry_command(command, retries=3, delay=5):
-    """
-    Retry a shell command a specified number of times with a delay between attempts.
-    """
-    for attempt in range(retries):
-        result = local(command, quiet=True)
-        if result.exit_code == 0:
-            return result
-        print("Command failed: " + command + ". Retrying in " + str(delay) + " seconds...")
-        local("sleep " + str(delay), quiet=True)
-    fail(f"Command failed after {retries} attempts: {command}")
 
 # Install Istio
 install_istio()
@@ -86,8 +75,28 @@ def configure_auth():
     # Create Istio Gateway and VirtualService for your applications
     k8s_yaml('manifests/auth/gateway.yaml')
     
-    # Set resource dependencies
-    k8s_resource('auth-policy', resource_deps=['jwt-auth'], labels=['auth', 'istio'])
+    # Explicitly register resources with their exact names from the YAML files
+    k8s_resource(
+        'auth-policy',  # The name matches the metadata.name in the YAML
+        resource_deps=['jwt-auth'],
+        labels=['auth', 'istio']
+    )
+    
+    k8s_resource(
+        'jwt-auth',  # The name matches the metadata.name in the YAML
+        labels=['auth', 'istio']
+    )
+    
+    k8s_resource(
+        'app-gateway',  # The name matches the metadata.name in the YAML
+        labels=['auth', 'istio']
+    )
+    
+    # Also reference the VirtualService
+    k8s_resource(
+        'keycloak-vs',
+        labels=['auth', 'istio']
+    )
 
 # Configure authentication
 configure_auth()
@@ -100,7 +109,7 @@ k8s_yaml('services/sample-app/k8s/deployment.yaml')
 k8s_resource(
     'sample-app',
     port_forwards=['3000:3000'],
-    resource_deps=['jwt-auth', 'authorization-policy'],
+    resource_deps=['jwt-auth', 'auth-policy', 'app-gateway'],
     labels=['app']
 )
 
