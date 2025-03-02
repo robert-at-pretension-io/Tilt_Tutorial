@@ -78,27 +78,27 @@ def configure_auth():
     # Explicitly register resources with their exact names from the YAML files
     k8s_resource(
         new_name='auth-policy',
-        objects=['AuthorizationPolicy:istio-system:auth-policy'],
+        objects=['auth-policy:AuthorizationPolicy:istio-system'],
         resource_deps=['jwt-auth'],  # adjust as needed, maybe 'istio-system:jwt-auth'
         labels=['auth', 'istio']
     )
     
     k8s_resource(
         new_name='jwt-auth',
-        objects=['RequestAuthentication:istio-system:jwt-auth'],
+        objects=['jwt-auth:RequestAuthentication:istio-system'],
         labels=['auth', 'istio']
     )
     
     k8s_resource(
         new_name='app-gateway',
-        objects=['Gateway:istio-system:app-gateway'],
+        objects=['app-gateway:Gateway:istio-system'],
         labels=['auth', 'istio']
     )
     
     # Also reference the VirtualService
     k8s_resource(
         new_name='keycloak-vs',
-        objects=['VirtualService:keycloak:keycloak-vs'],
+        objects=['keycloak-vs:VirtualService:keycloak'],
         labels=['auth', 'istio']
     )
 
