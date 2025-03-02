@@ -87,8 +87,7 @@ def configure_auth():
     k8s_yaml('manifests/auth/gateway.yaml')
     
     # Set resource dependencies
-    k8s_resource('jwt-auth', resource_deps=['istiod', 'keycloak'], labels=['auth', 'istio'])
-    k8s_resource('authorization-policy', resource_deps=['request-authentication'], labels=['auth', 'istio'])
+    k8s_resource('auth-policy', resource_deps=['jwt-auth'], labels=['auth', 'istio'])
 
 # Configure authentication
 configure_auth()
